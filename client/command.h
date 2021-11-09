@@ -82,11 +82,13 @@ struct command_family_desc {
 	void (*exit)(void);
 } __attribute__((aligned(8)));
 
-#define COMMAND_FAMILY(name, init, exit)				\
-	static struct command_family_desc __command_family_ ## name	\
-		__attribute__((used, section("__command"), aligned(8))) = {\
-			#name, init, exit				\
-		};							\
+#define COMMAND_FAMILY(name, init, exit)                                       \
+	_Pragma("GCC diagnostic push")                                         \
+	_Pragma("GCC diagnostic ignored \"-Wattributes\"")                     \
+        static struct command_family_desc __command_family_##name              \
+	__attribute__((used, retain, section("__command"), aligned(8))) = {    \
+		#name, init, exit};                                            \
+	_Pragma("GCC diagnostic pop")
 
 bool command_init(char **argv, int argc);
 void command_exit(void);
